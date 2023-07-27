@@ -13,9 +13,10 @@ HOST = os.getenv("HOST") or "127.0.0.1"
 COMM_PORT = os.getenv("COMM_PORT") or 44344
 REV_PORT = os.getenv("REV_PORT") or 44345
 
+comm = CommServer()
+rev = RevServer()
+
 async def background_tasks(app):
-    comm = CommServer()
-    rev = RevServer()
     app["comm_server"] = asyncio.create_task(comm.start(HOST, COMM_PORT))
     app["rev_server"] = asyncio.create_task(rev.start(HOST, REV_PORT))
     yield

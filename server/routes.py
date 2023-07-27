@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from aiohttp import web
+from main import comm, rev
 
 routes = web.RouteTableDef()
 
@@ -20,7 +21,7 @@ async def rev(request):
     ws_clients[token] = ws
 
     async for msg in ws:
-        rev.clients[token].writer.write(bytes(msg, "utf8"))
-        await rev.clients[token].writer.drain()
+        rev.clients[token][1].write(bytes(msg, "utf8"))
+        await rev.clients[token][1].drain()
 
     return ws
