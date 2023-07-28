@@ -9,6 +9,9 @@ class CommClient():
         self.writer = writer
         self.lock = asyncio.Lock()
 
+    def host(self):
+        return self.writer.get_extra_info("peername")
+
     async def write(self, data):
         self.writer.write(data)
         await self.writer.drain()
@@ -32,10 +35,10 @@ class CommClient():
         f.close()
         return await self.msg(data)
 
-    async def parse(self, script_output):
-        s = script_output.split("\n")
-        keys = [x.split("=", 1)[0] for x in s]
-        out = [x.split("=", 1)[1] for x in s]
+    def parse(self, script_output):
+        s = str(script_output, "utf8").split("\n")
+        keys = [x.split("=", 1)[0] for x in s if x]
+        out = [x.split("=", 1)[1] for x in s if x]
         return dict(zip(keys, out))
 
     async def run(self):

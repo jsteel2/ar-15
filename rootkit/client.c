@@ -55,5 +55,5 @@ start:
 retry:
     close(sock);
     sleep(10);
-    goto start;
+    goto start; // we dont want to restart if its a revshell
 }

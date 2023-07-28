@@ -1,13 +1,25 @@
 #!/usr/bin/env python3
 
+import asyncio
 from aiohttp import web
+import aiohttp_jinja2
 import shared
 
 routes = web.RouteTableDef()
 
+routes.static("/node_modules", "./node_modules")
+
 @routes.get("/")
 async def index(request):
-    return web.Response(text="sneed")
+    async def x(client):
+        return client, client.parse(await client.script("./scripts/status.sh"))
+    tasks = [x(client) for client in shared.comm.clients.values()]
+    results = await asyncio.gather(*tasks)
+    status = dict(results)
+    return aiohttp_jinja2.render_template("index.html", request, context={
+        "status": status,
+        "clients": shared.comm.clients
+    })
 
 @routes.get("/rev/{ip}/{port}")
 async def rev(request):
@@ -15,7 +27,7 @@ async def rev(request):
     await ws.prepare(request)
     ip = request.match_info["ip"]
     port = request.match_info["port"]
-    token = str(await shared.comm.clients[(ip, int(port))].msg("ls /.__EL_SNEEDIO__/rev"), "utf8") # command needs to be in background?
+    token = str(await shared.comm.clients[(ip, int(port))].msg("ls /.__EL_SNEEDIO__/rev &"), "utf8")
     shared.ws_clients[token] = ws
 
     try:
