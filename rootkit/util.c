@@ -158,7 +158,7 @@ bool start_client(void)
             {
                 close(x);
             }
-            prctl(PR_SET_NAME, PREFIX); // not sure if this works
+            prctl(PR_SET_NAME, PREFIX); // not sure if this works ( IT DOESNT )
             remove(lock_name);
 
             client_loop(NULL);

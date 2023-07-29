@@ -22,7 +22,7 @@ class CommClient():
             data = await self.reader.read(255)
             if len(data) == 0: raise Exception("disconnected")
             buf.extend(data)
-        return buf[:-4]
+        return bytes(buf[:-4])
 
     async def msg(self, data):
         async with self.lock:

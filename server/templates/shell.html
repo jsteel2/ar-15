@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Shell - {{ip}}:{{port}}{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="/node_modules/xterm/css/xterm.css"/>
+<script src="/node_modules/xterm/lib/xterm.js"></script>
+<script src="/node_modules/xterm-addon-attach/lib/xterm-addon-attach.js"></script>
+{% endblock %}
+
+{% block body %}
+<div id="terminal"></div>
+
+<script>
+ const term = new Terminal();
+ term.open(document.getElementById("terminal"));
+ const socket = new WebSocket(((window.location.protocol === "https:") ? "wss://" : "ws://") + window.location.host + "/rev/{{ip}}/{{port}}");
+ const attachAddon = new AttachAddon.AttachAddon(socket);
+ term.loadAddon(attachAddon)
+</script>
+{% endblock %}

