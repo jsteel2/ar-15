@@ -11,6 +11,7 @@ routes.static("/node_modules", "./node_modules")
 
 @routes.get("/")
 async def index(request):
+    print(shared.comm.clients, shared.rev.clients, shared.ws_clients)
     async def x(client):
         return client, client.parse(await client.script("./scripts/status.sh"))
     tasks = [x(client) for client in shared.comm.clients.values()]
@@ -27,17 +28,16 @@ async def rev(request):
     await ws.prepare(request)
     ip = request.match_info["ip"]
     port = request.match_info["port"]
-    token = str(await shared.comm.clients[(ip, int(port))].msg("mkdir -p /.__EL_SNEEDIO__/rev;ls /.__EL_SNEEDIO__/rev &"), "utf8")
+    token = str(await shared.comm.clients[(ip, int(port))].msg("touch /.__EL_SNEEDIO__/rev &"), "utf8")
     shared.ws_clients[token] = ws
 
     try:
         async for msg in ws:
-            a = msg.data
-            if a == '\r': a = '\n'
-            shared.rev.clients[token][1].write(bytes(a, "utf8"))
+            shared.rev.clients[token][1].write(bytes(msg.data, "utf8"))
             await shared.rev.clients[token][1].drain()
     finally:
         del shared.ws_clients[token]
+        shared.rev.clients[token][1].close() # idk
         return ws
 
 @routes.get("/shell/{ip}/{port}")

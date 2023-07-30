@@ -1,7 +1,7 @@
 OBJ=main.o client.o util.o
 PREFIX=.__EL_SNEEDIO__
 BIN=$(PREFIX).so
-LDFLAGS=-ldl
+LDFLAGS=-ldl -lutil
 CFLAGS=-fPIC -shared -DPREFIX=\"$(PREFIX)\" -D_GNU_SOURCE
 
 all: $(BIN)

