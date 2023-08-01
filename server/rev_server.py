@@ -6,7 +6,6 @@ import shared
 class RevServer(TCPServer):
     async def handle_client(self, reader, writer):
         token = None
-        print(writer.get_extra_info("peername"))
         try:
             buf = bytearray()
             while not buf.endswith(b'END\n'):

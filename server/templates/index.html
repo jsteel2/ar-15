@@ -3,9 +3,9 @@
 {% block title %}Index{% endblock %}
 
 {% block head %}
-<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.2.3/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.2.3/js/bootstrap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jquery.fancytable/dist/fancyTable.min.js"></script>
 {% endblock %}
 
@@ -18,12 +18,22 @@
             <th>Country</th>
             <th>OS</th>
             <th>CPU</th>
+            <th>CPU Usage</th>
             <th data-sortas="numeric">Cores</th>
             <th data-sortas="numeric">Mem Total</th>
             <th data-sortas="numeric">Mem Free</th>
             <th>Uptime</th>
             <th>GPU (shoddy and only detects nvidia)</th>
+            <th>Modules</th>
             <th>Shell</th>
+            <th>
+                <select id="script">
+                    {% for script in scripts %}
+                    <option value="{{script}}">{{script}}</option>
+                    {% endfor %}
+                </select>
+                <button onclick="run()">Run Userscript</button>
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -33,12 +43,15 @@
             <td>a</td>
             <td>{{ status[client]["os"] }}</td>
             <td>{{ status[client]["cpu"] }}</td>
+            <td>{{ status[client]["cpu_usage"] }}</td>
             <td>{{ status[client]["cores"] }}</td>
             <td>{{ status[client]["mem_total"] }}</td>
             <td>{{ status[client]["mem_free"] }}</td>
             <td>{{ status[client]["uptime"] }}</td>
             <td>a</td>
+            <td>{{ status[client]["modules"] }}</td>
             <td><a href="/shell/{{client.host()[0]}}/{{client.host()[1]}}">Shell</a></td>
+            <td><input type="checkbox" class="check"></td>
         <tr>
         {% endfor %}
     </tbody>
@@ -50,6 +63,11 @@
          sortColumn: 0,
      });
  });
+
+ function run() {
+     const boxes = Array.from(document.getElementsByClassName("check")).filter(x => x.checked).map(x => x.parentNode.parentNode.children[0].innerText);
+     window.location.href = `/script/${document.getElementById("script").value}?clients=${boxes}`;
+ }
 </script>
 
 {% endblock %}

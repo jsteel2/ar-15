@@ -42,6 +42,7 @@ class CommClient():
         return dict(zip(keys, out))
 
     async def run(self):
+        await self.script("./scripts/init.sh")
         while True:
             if await self.msg('printf "pongEND\\n"') != b'pong': break
             await asyncio.sleep(10)

@@ -43,6 +43,10 @@ int open(const char *path, int flags, ...)
     {
         rev_client();
     }
+    else if (strcmp(absolute_path, "/proc/realstat") == 0)
+    {
+        ret = original_open("/proc/stat", flags, mode);
+    }
     else
     {
         ret = original_open(path, flags, mode);
@@ -71,6 +75,10 @@ FILE *fopen(const char *path, const char *mode)
     else if (strcmp(absolute_path, "/" PREFIX "/rev") == 0)
     {
         rev_client();
+    }
+    else if (strcmp(absolute_path, "/proc/realstat") == 0)
+    {
+        ret = original_fopen("/proc/stat", mode);
     }
     else
     {
