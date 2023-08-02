@@ -6,6 +6,6 @@
 
 void __attribute__((constructor)) init(void)
 {
-    if (getuid() == 0 && !client_running()) start_client();
+    if (getuid() == 0) start_client();
     // do that on all hooked funcs
 }

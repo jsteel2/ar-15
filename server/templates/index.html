@@ -11,6 +11,8 @@
 
 {% block body %}
 
+<h1>Boxes Connected: {{len(clients)}}</h1>
+
 <table class="table table-striped fancy-table">
     <thead>
         <tr>
@@ -40,7 +42,7 @@
         {% for client in clients.values() %}
         <tr>
             <td>{{ "%s:%d" % client.host() }}</td>
-            <td>a</td>
+            <td>{{ client.ipinfo.country }}</td>
             <td>{{ status[client]["os"] }}</td>
             <td>{{ status[client]["cpu"] }}</td>
             <td>{{ status[client]["cpu_usage"] }}</td>

@@ -15,6 +15,10 @@ async def index(request):
     async def x(client):
         return client, client.parse(await client.script("./scripts/status.sh"))
     tasks = [x(client) for client in shared.comm.clients.values()]
+    # in these async tasks, handle a disconnect/timeout exception
+    # so that it just removes it from the result instead of epically failing
+    # and also in general make it show the error instead of "something went wrong"
+    # but idk how to do that in aiohttp
     results = await asyncio.gather(*tasks)
     status = dict(results)
     return aiohttp_jinja2.render_template("index.html", request, context={

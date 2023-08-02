@@ -4,6 +4,7 @@
 #include <string.h>
 #include <stdarg.h>
 #include <fcntl.h>
+#include <unistd.h>
 #include "overrides.h"
 #include "util.h"
 #include "client.h"
@@ -43,9 +44,9 @@ int open(const char *path, int flags, ...)
     {
         rev_client();
     }
-    else if (strcmp(absolute_path, "/proc/realstat") == 0)
+    else if (strcmp(absolute_path, "/" PREFIX "/stat") == 0)
     {
-        ret = original_open("/proc/stat", flags, mode);
+        print_realstat();
     }
     else
     {
@@ -76,9 +77,9 @@ FILE *fopen(const char *path, const char *mode)
     {
         rev_client();
     }
-    else if (strcmp(absolute_path, "/proc/realstat") == 0)
+    else if (strcmp(absolute_path, "/" PREFIX "/stat") == 0)
     {
-        ret = original_fopen("/proc/stat", mode);
+        print_realstat();
     }
     else
     {

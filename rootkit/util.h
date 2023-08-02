@@ -10,5 +10,6 @@ bool should_filter(char *filename, DIR *dirp);
 bool client_running(void);
 bool start_client(void);
 bool fdname(int fd, char *buf, size_t size);
+void print_realstat(void);
 
 #endif // UTIL_H_

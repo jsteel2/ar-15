@@ -28,7 +28,7 @@ def main():
     aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader("./templates"))
     app.cleanup_ctx.append(background_tasks)
     app.add_routes(routes)
-    web.run_app(app, port=HTTP_PORT)
+    web.run_app(app, host=HOST, port=HTTP_PORT)
 
 if __name__ == '__main__':
     main()

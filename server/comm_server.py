@@ -1,13 +1,18 @@
 #!/usr/bin/env python3
 
+import os
 import asyncio
+import ipinfo
 from tcp_server import TCPServer
+
+iphandler = ipinfo.getHandlerAsync(os.getenv("IPINFO_TOKEN") or "fd737c5e5030e3")
 
 class CommClient():
     def __init__(self, reader, writer):
         self.reader = reader
         self.writer = writer
         self.lock = asyncio.Lock()
+        self.ipinfo = None
 
     def host(self):
         return self.writer.get_extra_info("peername")
@@ -42,6 +47,7 @@ class CommClient():
         return dict(zip(keys, out))
 
     async def run(self):
+        self.ipinfo = await iphandler.getDetails(self.host()[0])
         await self.script("./scripts/init.sh")
         while True:
             if await self.msg('printf "pongEND\\n"') != b'pong': break

