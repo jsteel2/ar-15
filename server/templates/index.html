@@ -39,7 +39,7 @@
         </tr>
     </thead>
     <tbody>
-        {% for client in clients.values() %}
+        {% for client in clients %}
         <tr>
             <td>{{ "%s:%d" % client.host() }}</td>
             <td>{{ client.ipinfo.country }}</td>

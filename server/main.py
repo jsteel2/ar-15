@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import traceback
 import asyncio
 from aiohttp import web
 import jinja2
@@ -36,7 +37,7 @@ async def error_middleware(app, handler):
             if e.status == 404: return json_error(404, e)
             raise
         except Exception as e:
-            print(f"Request {request} has failed with exception: {repr(e)}")
+            print(f"Request {request} has failed with exception: {traceback.format_exc()}")
             return json_error(500, e)
 
     return m
