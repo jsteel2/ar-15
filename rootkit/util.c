@@ -137,6 +137,7 @@ bool client_running(void)
     return false;
 }
 
+// FIXME process doesnt get started?
 bool start_client(void)
 {
     char *lock_name = "/" PREFIX ".LOCK";

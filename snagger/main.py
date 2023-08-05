@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 
-# TODO:
-# fix keyboard
-
 import sys
 import time
 import asyncio, asyncvnc
@@ -17,7 +14,6 @@ shift_chars = {
     'V': 'v', 'B': 'b', 'N': 'n', 'M': 'm', '<': ',', '>': '.', '?': '/'
 }
 
-# this function is a lil brokey
 def write(client, s):
     for c in s:
         if c in shift_chars: client.keyboard.press("Shift", c)
@@ -25,13 +21,13 @@ def write(client, s):
         time.sleep(0.3)
 
 def reboot(client):
-    for x in range(8): client.keyboard.press("Ctrl", "Alt", "Del")
-    for x in range(5): client.keyboard.press("Alt", "Print", "b")
+    client.keyboard.press("Ctrl", "Alt", "Del")
+    client.keyboard.press("Alt", "Print", "b")
 
 def grub_enter(client):
-    for x in range(200): # set this back to 1000
+    for x in range(3000):
         client.keyboard.press("Esc")
-        time.sleep(0.1)
+        time.sleep(0.03)
     client.keyboard.press("c")
 
 def grub_boot(client):
