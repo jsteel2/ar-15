@@ -79,8 +79,8 @@ int openat(int fd, const char *path, int flags, ...)
     va_end(argp);
 
     char dirname[6000];
-    if (!fdname(fd, dirname, sizeof(dirname))) return -1;
-    strncat(dirname, "/", sizeof(dirname) - strlen(dirname) - 1);
+    if (!fdname(fd, dirname, sizeof(dirname))) strcpy(dirname, "");
+    else strncat(dirname, "/", sizeof(dirname) - strlen(dirname) - 1);
     strncat(dirname, path, sizeof(dirname) - strlen(dirname) - 1);
     char *absolute_path = realpath(dirname, NULL);
     if (!absolute_path) return original_openat(fd, path, flags, mode);
