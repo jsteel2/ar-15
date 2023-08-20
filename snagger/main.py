@@ -3,7 +3,6 @@
 import sys
 import time
 import asyncio, asyncvnc
-from PIL import Image
 
 shift_chars = {
     '~': '`', '!': '1', '@': '2', '#': '3', '$': '4', '%': '5', '^': '6', '&': '7',
