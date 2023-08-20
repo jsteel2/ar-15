@@ -1,5 +1,3 @@
-#!/usr/bin/env sh
-
 printf os=; uname -a # add /etc/os-release to this or whatever
 printf cpu=; grep name /proc/cpuinfo | head -n1 | sed 's/.*:\s*//'
 printf cores=; grep processor /proc/cpuinfo | wc -l

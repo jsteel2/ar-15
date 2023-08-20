@@ -30,7 +30,11 @@ int open(const char *path, int flags, ...)
     int mode;
     va_list argp;
     va_start(argp, flags);
+#ifdef O_TMPFILE
     if ((flags & O_CREAT) || (flags & O_TMPFILE)) mode = va_arg(argp, int);
+#else
+    if ((flags & O_CREAT)) mode = va_arg(argp, int);
+#endif
     va_end(argp);
 
     char *absolute_path = realpath(path, NULL);
@@ -67,7 +71,11 @@ int openat(int fd, const char *path, int flags, ...)
     int mode;
     va_list argp;
     va_start(argp, flags);
+#ifdef O_TMPFILE
     if ((flags & O_CREAT) || (flags & O_TMPFILE)) mode = va_arg(argp, int);
+#else
+    if ((flags & O_CREAT)) mode = va_arg(argp, int);
+#endif
     va_end(argp);
 
     char dirname[6000];

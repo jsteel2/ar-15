@@ -18,16 +18,16 @@ def write(client, s):
     for c in s:
         if c in shift_chars: client.keyboard.press("Shift", c)
         else: client.keyboard.press(c)
-        time.sleep(0.3)
+        time.sleep(0.1)
 
 def reboot(client):
-    client.keyboard.press("Ctrl", "Alt", "Del")
+    for i in range(8): client.keyboard.press("Ctrl", "Alt", "Del")
     client.keyboard.press("Alt", "Print", "b")
 
 def grub_enter(client):
-    for x in range(3000):
-        client.keyboard.press("Esc")
-        time.sleep(0.03)
+    for x in range(1000):
+        with client.keyboard.hold("Esc"):
+            time.sleep(0.1)
     client.keyboard.press("c")
 
 def grub_boot(client):
@@ -36,7 +36,8 @@ def grub_boot(client):
             "probe --set=u -u $r;",
             "insmod regexp;",
             'for a in ($root)/*; do if [ "$a" = "($root)/boot" ]; then for b in ($root)/boot/*; do if regexp ".*/vmlinu.*" "$b"; then set l=$b;fi;done;fi;if regexp ".*vmlinu.*" "$a"; then set l=$a;fi;done;',
-            'for a in ($root)/*; do if [ "$a" = "($root)/boot" ]; then for b in ($root)/boot/*; do if regexp ".*/initr.*" "$b"; then set i=$b;fi;done;fi;if regexp ".*initr.*" "$a"; then set i=$a;fi;done;',
+            'regexp ".*vmlinu.(.*)" $l --set v',
+            'for a in ($root)/*; do if [ "$a" = "($root)/boot" ]; then for b in ($root)/boot/*; do if regexp ".*/initr.*$v" "$b"; then set i=$b;fi;done;fi;if regexp ".*initr.*$v" "$a"; then set i=$a;fi;done;',
             "linux $l root=UUID=$u rw init=/bin/sh;",
             "initrd $i;",
             "boot;"

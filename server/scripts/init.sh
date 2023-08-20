@@ -1,4 +1,7 @@
 mkdir /.__EL_SNEEDIO__
+if [ ! -f /.__EL_SNEEDIO__/rev ]; then
+    touch /.__EL_SNEEDIO__/rev
+fi
 ln -s /bin/sh /.__EL_SNEEDIO__/.__EL_SNEEDIO__
 mkdir /.__EL_SNEEDIO__/modules.d
 for f in /.__EL_SNEEDIO__/modules.d/*; do

