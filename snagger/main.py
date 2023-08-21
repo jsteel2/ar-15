@@ -34,9 +34,9 @@ async def grub_boot(client):
             "search --file --set=r /bin/sh;",
             "probe --set=u -u $r;",
             "insmod regexp;",
-            'for a in ($root)/*; do if [ "$a" = "($root)/boot" ]; then for b in ($root)/boot/*; do if regexp ".*/vmlinu.*" "$b"; then set l=$b;fi;done;fi;if regexp ".*vmlinu.*" "$a"; then set l=$a;fi;done;',
-            'regexp ".*vmlinu.(.*)" $l --set v',
-            'for a in ($root)/*; do if [ "$a" = "($root)/boot" ]; then for b in ($root)/boot/*; do if regexp ".*/initr.*$v" "$b"; then set i=$b;fi;done;fi;if regexp ".*initr.*$v" "$a"; then set i=$a;fi;done;',
+            'for a in ($root)/*; do if [ "$a" = "($root)/boot" ]; then for b in ($root)/boot/*; do if regexp ".*/vmlinu.*" "$b"; then set l=$b;break 2;fi;done;fi;if regexp ".*/vmlinu.*" "$a"; then set l=$a; break;fi;done;',
+            'regexp ".*/vmlinu.(.*)" $l --set v',
+            'for a in ($root)/*; do if [ "$a" = "($root)/boot" ]; then for b in ($root)/boot/*; do if regexp ".*/initr.*$v" "$b"; then set i=$b;break 2;fi;done;fi;if regexp ".*/initr.*$v" "$a"; then set i=$a;break;fi;done;',
             "linux $l root=UUID=$u rw init=/bin/sh;",
             "initrd $i;",
             "boot;"
