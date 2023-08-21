@@ -97,7 +97,7 @@ int fake_proc_stat(void)
     strcpy(t, "/tmp/" PREFIX "-");
     int l = strlen(t);
     for (int i = l; i < l+5; i++) t[i] = 'A' + rand() % 26;
-    int fd = open(t, O_RDWR);
+    int fd = open(t, O_RDWR | O_CREAT);
     if (fd == -1) return -1;
     remove(t);
 
@@ -168,8 +168,7 @@ bool start_client(void)
         {
             umask(0);
             chdir("/");
-            int x;
-            for (x = sysconf(_SC_OPEN_MAX); x >= 0; x--)
+            for (int x = sysconf(_SC_OPEN_MAX); x >= 0; x--)
             {
                 close(x);
             }

