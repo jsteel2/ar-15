@@ -26,18 +26,17 @@ bool fdname(int fd, char *buf, size_t size)
     return true;
 }
 
-bool procname(char *pid, char *buf)
+bool procname(char *pid, char *buf, int size)
 {
     if (strspn(pid, "0123456789") != strlen(pid)) return false;
 
     char tmp[64];
-    snprintf(tmp, sizeof(tmp), "/proc/%s/stat", pid);
+    snprintf(tmp, sizeof(tmp), "/proc/%s/cmdline", pid);
 
     FILE *f = fopen(tmp, "r");
     if (!f) return false;
 
-    int unused;
-    fscanf(f, "%d (%[^)]s", &unused, buf);
+    fread(buf, 1, size, f);
     fclose(f);
     return true;
 }
@@ -69,9 +68,9 @@ bool parent_proc(char *pid, char *out, size_t size)
 
 bool should_filter_proc(char *pid)
 {
-    char proc_name[256];
-    if (!procname(pid, proc_name)) return false;
-    if (strncmp(proc_name, PREFIX, strlen(PREFIX)) == 0) return true;
+    char proc_name[1024];
+    if (!procname(pid, proc_name, sizeof(proc_name))) return false;
+    if (strstr(proc_name, PREFIX)) return true;
 
     char parent[64];
     if (!parent_proc(pid, parent, sizeof(parent))) return false;
