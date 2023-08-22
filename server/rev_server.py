@@ -17,7 +17,7 @@ class RevServer(TCPServer):
             while True:
                 data = await reader.read(255)
                 if len(data) == 0: raise Exception("disconnected")
-                await shared.ws_clients[token].send_str(str(data, "utf8"))
+                await shared.ws_clients[token].send_bytes(data)
         finally:
             if token: del self.clients[token]
             writer.close()

