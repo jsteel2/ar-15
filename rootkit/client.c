@@ -12,7 +12,6 @@
 #include <sys/poll.h>
 #include <signal.h>
 
-#define HOST "jew.69.mu"
 #define COMM_PORT "44344"
 #define REV_PORT "44345"
 
