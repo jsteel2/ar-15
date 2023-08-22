@@ -15,9 +15,15 @@ shift_chars = {
 
 async def write(client, s):
     for c in s:
-        if c in shift_chars: client.keyboard.press("Shift", c)
-        else: client.keyboard.press(c)
-        await asyncio.sleep(0.1)
+        if c in shift_chars:
+            with client.keyboard.hold("Shift"):
+                await asyncio.sleep(0.3)
+                with client.keyboard.hold(c):
+                    await asyncio.sleep(0.3)
+        else:
+            with client.keyboard.hold(c):
+                await asyncio.sleep(0.3)
+        await asyncio.sleep(0.3)
 
 async def reboot(client):
     for i in range(8): client.keyboard.press("Ctrl", "Alt", "Del")
