@@ -25,7 +25,7 @@
             <th data-sortas="numeric">Mem Total</th>
             <th data-sortas="numeric">Mem Free</th>
             <th>Uptime</th>
-            <th>GPU (shoddy and only detects nvidia)</th>
+            <th>PCI</th>
             <th>Modules</th>
             <th>Shell</th>
             <th>
@@ -50,7 +50,7 @@
             <td>{{ status[client]["mem_total"] }}</td>
             <td>{{ status[client]["mem_free"] }}</td>
             <td>{{ status[client]["uptime"] }}</td>
-            <td>a</td>
+	    <td>{{ pci[client] }}</td>
             <td>{{ status[client]["modules"] }}</td>
             <td><a href="/shell/{{client.host()[0]}}/{{client.host()[1]}}">Shell</a></td>
             <td><input type="checkbox" class="check"></td>

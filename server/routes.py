@@ -5,6 +5,7 @@ import asyncio
 from aiohttp import web
 import aiohttp_jinja2
 import shared
+from pci import pcis_to_str
 
 routes = web.RouteTableDef()
 
@@ -17,8 +18,10 @@ async def index(request):
     tasks = [x(client) for client in shared.comm.clients.values()]
     results = await asyncio.gather(*tasks, return_exceptions=True)
     status = {x[0]: x[1] for x in results if isinstance(x, tuple)}
+    pci = {k: pcis_to_str(v["pci"].split(",")) for k, v in status.items()}
     return aiohttp_jinja2.render_template("index.html", request, context={
         "status": status,
+        "pci": pci,
         "clients": [x for x in shared.comm.clients.values() if x in status],
         "scripts": os.listdir("./userscripts")
     })

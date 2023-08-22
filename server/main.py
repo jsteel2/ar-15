@@ -10,6 +10,7 @@ from routes import routes
 from comm_server import CommServer
 from rev_server import RevServer
 import shared
+import pci
 
 HOST = os.getenv("HOST") or "0.0.0.0"
 HTTP_PORT = int(os.getenv("HTTP_PORT") or "8080")
@@ -20,6 +21,7 @@ shared.comm = CommServer()
 shared.rev = RevServer()
 
 async def background_tasks(app):
+    await pci.init()
     app["comm_server"] = asyncio.create_task(shared.comm.start(HOST, COMM_PORT))
     app["rev_server"] = asyncio.create_task(shared.rev.start(HOST, REV_PORT))
     yield
