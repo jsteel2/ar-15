@@ -130,7 +130,7 @@ bool client_running(void)
 {
     ORIG(readdir, false);
 
-    pid_t pid;
+    pid_t pid = getpid();
     char cur_pid[64];
     sprintf(cur_pid, "%d", pid);
 
