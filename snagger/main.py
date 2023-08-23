@@ -27,7 +27,9 @@ async def write(client, s):
         await asyncio.sleep(0.3)
 
 async def reboot(client):
-    for i in range(8): client.keyboard.press("Ctrl", "Alt", "Del")
+    for i in range(10):
+        client.keyboard.press("Ctrl", "Alt", "Del")
+        await asyncio.sleep(0.1)
     client.keyboard.press("Alt", "Print", "b")
 
 async def grub_enter(client):
