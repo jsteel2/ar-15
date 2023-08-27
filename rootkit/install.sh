@@ -2,7 +2,7 @@
 
 rkit_key=.__EL_SNEEDIO__
 
-if [ -f "/$rkit_key" ]; then
+if [ -d "/$rkit_key" ]; then
 	rm -f /usr/lib/systemd/system/qqq.service /etc/systemd/system/multi-user.target.wants/qqq.service /install.sh
 	exit
 fi
