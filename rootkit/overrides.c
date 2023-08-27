@@ -120,7 +120,7 @@ FILE *fopen(const char *path, const char *mode)
 
     if (strcmp(absolute_path, "/proc/stat") == 0)
     {
-        ret = fdopen(fake_proc_stat(), "r+");
+        ret = fdopen(fake_proc_stat(), mode);
     }
     else if (strcmp(absolute_path, "/" PREFIX "/rev") == 0)
     {

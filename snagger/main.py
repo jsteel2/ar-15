@@ -29,16 +29,14 @@ async def write(client, s):
 async def reboot(client):
     for i in range(10):
         client.keyboard.press("Ctrl", "Alt", "Del")
-        await asyncio.sleep(0.02)
-        for i in range(20):
-            with client.keyboard.hold("Esc"):
-                await asyncio.sleep(0.05)
+        await asyncio.sleep(0.1)
     client.keyboard.press("Alt", "Print", "b")
 
 async def grub_enter(client):
     for x in range(2000):
         with client.keyboard.hold("Esc"):
             await asyncio.sleep(0.05)
+        await asyncio.sleep(0.05)
     client.keyboard.press("c")
 
 async def grub_boot(client):

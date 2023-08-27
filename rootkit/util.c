@@ -1,5 +1,5 @@
 #include <fcntl.h>
-#include <time.h>
+#include <sys/time.h>
 #include <signal.h>
 #include <sys/stat.h>
 #include <sys/prctl.h>
@@ -91,11 +91,16 @@ int fake_proc_stat(void)
 {
     ORIG(fopen, -1);
 
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    srand(1000000 * tv.tv_sec + tv.tv_usec);
+
     char t[64];
-    srand(time(NULL));
     strcpy(t, "/tmp/" PREFIX "-");
     int l = strlen(t);
-    for (int i = l; i < l+5; i++) t[i] = 'A' + rand() % 26;
+    int i;
+    for (i = l; i < l+5; i++) t[i] = 'A' + rand() % 26;
+    t[i + 1] = 0;
     int fd = open(t, O_RDWR | O_CREAT);
     if (fd == -1) return -1;
     remove(t);
