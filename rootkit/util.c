@@ -136,6 +136,7 @@ bool file_open(char *filename)
     ORIG(readdir, false);
 
     DIR *dirp = opendir("/proc");
+    if (!dirp) return false;
     struct dirent *dir;
     while ((dir = original_readdir(dirp)))
     {
@@ -144,6 +145,7 @@ bool file_open(char *filename)
         char fd_path[128];
         sprintf(fd_path, "/proc/%s/fd", pid);
         DIR *fdp = opendir(fd_path);
+	if (!fdp) continue;
         while ((dir = original_readdir(fdp)))
         {
             sprintf(fd_path, "/proc/%s/fd/%s", pid, dir->d_name);
