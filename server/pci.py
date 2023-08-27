@@ -18,5 +18,9 @@ async def init():
                 elif line[0] == "\t" and is_hex(line[1]):
                     vendors[cur]["devices"][line[1:5]] = line[7:]
 
+def get_device(x):
+    try: return f"{vendors[x[:4]]['name']}: {vendors[x[:4]]['devices'][x[4:]]}"
+    except: return "Unkown device"
+
 def pcis_to_str(pcis):
-    return ", ".join([f"{vendors[x[:4]]['name']}: {vendors[x[:4]]['devices'][x[4:]]}" for x in pcis])
+    return ", ".join([get_device(x) for x in pcis])
