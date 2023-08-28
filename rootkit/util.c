@@ -43,7 +43,7 @@ bool procname(char *pid, char *buf, int size)
         if (buf[i] == 0) buf[i] = ' ';
     }
 
-    sprintf(tmp, sizeof(tmp), "/proc/%s/stat", pid);
+    snprintf(tmp, sizeof(tmp), "/proc/%s/stat", pid);
     f = fopen(tmp, "r");
     if (!f) return false;
 
