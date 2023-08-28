@@ -1,4 +1,6 @@
 #include <fcntl.h>
+#include <sys/wait.h>
+#include <sys/mount.h>
 #include <sys/time.h>
 #include <signal.h>
 #include <sys/stat.h>
@@ -38,7 +40,7 @@ bool procname(char *pid, char *buf, int size)
 
     fread(buf, 1, size - 64, f);
     fclose(f);
-    for (int i = 0; i < size && buf[i] != 0 || buf[i + 1] != 0)
+    for (int i = 0; i < size && buf[i] != 0 || buf[i + 1] != 0; i++)
     {
         if (buf[i] == 0) buf[i] = ' ';
     }
@@ -149,7 +151,7 @@ bool start_client(void)
     char *lock_name = "/" PREFIX "/tmp/" PREFIX ".lock";
     int fd;
     mkdir("/" PREFIX "/tmp", 0777);
-    mount("none", "/" PREFIX "/tmp", "tmpfs", "");
+    mount("tmpfs", "/" PREFIX "/tmp", "tmpfs", 0, "");
     if ((fd = open(lock_name, O_CREAT | O_EXCL)) == -1) return false;
 
     pid_t pid;
