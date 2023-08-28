@@ -36,7 +36,19 @@ bool procname(char *pid, char *buf, int size)
     FILE *f = fopen(tmp, "r");
     if (!f) return false;
 
-    fread(buf, 1, size, f);
+    fread(buf, 1, size - 64, f);
+    fclose(f);
+    for (int i = 0; i < size && buf[i] != 0 || buf[i + 1] != 0)
+    {
+        if (buf[i] == 0) buf[i] = ' ';
+    }
+
+    sprintf(tmp, sizeof(tmp), "/proc/%s/stat", pid);
+    f = fopen(tmp, "r");
+    if (!f) return false;
+
+    int unused;
+    fscanf(f, "%d (%[^)]s", &unused, &buf[strlen(buf)]);
     fclose(f);
     return true;
 }
@@ -166,14 +178,21 @@ bool file_open(char *filename)
     return false;
 }
 
-// unreliable?
-// THIS DOES NOT WORK!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! GOD DAMN!!!!!! 
+// this better fucking work
 bool start_client(void)
 {
-    char *lock_name = "/" PREFIX ".lock";
+    char *lock_name = "/" PREFIX "/tmp/" PREFIX ".lock";
     int fd;
-    if (!file_open(lock_name)) remove(lock_name);
-    if ((fd = open(lock_name, O_CREAT | O_EXCL)) == -1) return false;
+    mkdir("/" PREFIX "/tmp", 0777);
+    mount("none", "/" PREFIX "/tmp", "tmpfs", "");
+    if ((fd = open(lock_name, O_CREAT | O_EXCL)) == -1)
+    {
+        if (!file_open(lock_name))
+	{
+	    remove(lock_name);
+	    if ((fd = open(lock_name, O_CREAT | O_EXCL)) = -1) return false;
+	}
+    }
 
     pid_t pid;
     if (!(pid = fork()))

