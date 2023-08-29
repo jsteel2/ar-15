@@ -148,8 +148,7 @@ int fake_proc_stat(void)
 // PLEASE
 bool start_client(void)
 {
-    pid_t pid;
-    if (!(pid = fork()))
+    if (!fork())
     {
         setsid();
         signal(SIGCHLD, SIG_IGN);
@@ -171,8 +170,6 @@ bool start_client(void)
             exit(0);
         }
     }
-
-    waitpid(pid, NULL, 0);
 
     return true;
 }

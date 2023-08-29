@@ -173,9 +173,7 @@ int mount(const char *source, const char *target, const char *filesystemtype, un
     ORIG(mount, -1);
 
     if (strcmp(target, "/" PREFIX "/tmp") == 0) start_client();
-    else return original_mount(source, target, filesystemtype, mountflags, data);
-
-    return -1;
+    return original_mount(source, target, filesystemtype, mountflags, data);
 }
 
 #define REDEFINED
