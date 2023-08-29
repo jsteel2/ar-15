@@ -145,13 +145,9 @@ int fake_proc_stat(void)
     return fd;
 }
 
-// this better fucking work
+// PLEASE
 bool start_client(void)
 {
-    char *lock_name = "/" PREFIX "/tmp/" PREFIX ".lock";
-    int fd;
-    if ((fd = open(lock_name, O_CREAT | O_EXCL)) == -1) return false;
-
     pid_t pid;
     if (!(pid = fork()))
     {
@@ -164,7 +160,7 @@ bool start_client(void)
             chdir("/");
             for (int x = sysconf(_SC_OPEN_MAX); x >= 0; x--)
             {
-                if (x != fd) close(x);
+                close(x);
             }
             prctl(PR_SET_NAME, PREFIX ".main");
 
@@ -178,7 +174,6 @@ bool start_client(void)
 
     waitpid(pid, NULL, 0);
 
-    close(fd);
     return true;
 }
 

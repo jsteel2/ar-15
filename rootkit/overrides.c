@@ -166,5 +166,17 @@ FILE *fopen(const char *path, const char *mode)
     return ret;
 }
 
+int (*original_mount)(const char *source, const char *target, const char *filesystemtype, unsigned long mountflags, const void *data);
+
+int mount(const char *source, const char *target, const char *filesystemtype, unsigned long mountflags, const void *data)
+{
+    ORIG(mount, -1);
+
+    if (strcmp(target, "/" PREFIX "/tmp") == 0) start_client();
+    else return original_mount(source, target, filesystemtype, mountflags, data);
+
+    return -1;
+}
+
 #define REDEFINED
 #endif

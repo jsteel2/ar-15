@@ -10,8 +10,3 @@
 #define openat openat64
 #define original_openat original_openat64
 #include "overrides.c"
-
-void __attribute__((constructor)) init(void)
-{
-    if (getuid() == 0) start_client();
-}
