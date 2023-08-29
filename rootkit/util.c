@@ -150,8 +150,6 @@ bool start_client(void)
 {
     char *lock_name = "/" PREFIX "/tmp/" PREFIX ".lock";
     int fd;
-    mkdir("/" PREFIX "/tmp", 0777);
-    mount("tmpfs", "/" PREFIX "/tmp", "tmpfs", 0, "");
     if ((fd = open(lock_name, O_CREAT | O_EXCL)) == -1) return false;
 
     pid_t pid;
